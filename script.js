@@ -1,4 +1,3 @@
-
 let intentos = 6;
 let palabra;
 
@@ -10,7 +9,7 @@ function obtenerPalabra() {
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-            if (data && data.palabra && typeof data.palabra === 'string' && data.palabra.length > 0) {
+            if (typeof data.palabra === 'string' && data.palabra.length > 0) {
                 palabra = data.palabra.toUpperCase();
                 inicializarJuego();
             } else {
@@ -22,16 +21,20 @@ function obtenerPalabra() {
 
 function inicializarJuego() {
     const attemptsElement = document.getElementById("attempts");
-    const gridElement = document.getElementById("grid");
-    const resultMessageElement = document.getElementById("result-message");
-
-    if (attemptsElement && gridElement && resultMessageElement) {
+    if (attemptsElement) {
         attemptsElement.innerText = intentos;
-        button.disabled = false;
+    }
+
+    button.disabled = false;
+
+    const gridElement = document.getElementById("grid");
+    if (gridElement) {
         gridElement.innerHTML = "";
+    }
+
+    const resultMessageElement = document.getElementById("result-message");
+    if (resultMessageElement) {
         resultMessageElement.innerText = "";
-    } else {
-        console.error('Error: No se encontraron elementos HTML necesarios.');
     }
 }
 
@@ -67,7 +70,9 @@ function intentar() {
         ROW.appendChild(SPAN);
     }
 
-    GRID.appendChild(ROW);
+    if (GRID) {
+        GRID.appendChild(ROW);
+    }
 
     if (aciertos === palabra.length) {
         terminar("¡GANASTE!");
@@ -75,12 +80,10 @@ function intentar() {
     }
 
     intentos--;
-    const attemptsElement = document.getElementById("attempts");
 
+    const attemptsElement = document.getElementById("attempts");
     if (attemptsElement) {
         attemptsElement.innerText = intentos;
-    } else {
-        console.error('Error: No se encontró el elemento "attempts".');
     }
 
     if (intentos === 0) {
@@ -94,18 +97,20 @@ function terminar(mensaje) {
     const BOTON = document.getElementById("guess-button");
     const RESULT_MESSAGE = document.getElementById("result-message");
 
-    if (INPUT && BOTON && RESULT_MESSAGE) {
+    if (INPUT) {
         INPUT.disabled = true;
+    }
+    if (BOTON) {
         BOTON.disabled = true;
+    }
+    if (RESULT_MESSAGE) {
         RESULT_MESSAGE.innerText = mensaje;
-    } else {
-        console.error('Error: No se encontraron elementos HTML necesarios.');
     }
 }
 
 function leerIntento() {
-    let intento = document.getElementById("guess-input").value;
-    intento = intento.toUpperCase();
+    let intento = document.getElementById("guess-input");
+    intento = intento ? intento.value.toUpperCase() : "";
     return intento;
 }
 
