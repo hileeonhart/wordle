@@ -1,3 +1,4 @@
+
 let intentos = 6;
 let palabra;
 
@@ -9,8 +10,7 @@ function obtenerPalabra() {
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-            // Verificar que 'data.palabra' sea una cadena no vacía
-            if (typeof data.palabra === 'string' && data.palabra.length > 0) {
+            if (data && data.palabra && typeof data.palabra === 'string' && data.palabra.length > 0) {
                 palabra = data.palabra.toUpperCase();
                 inicializarJuego();
             } else {
@@ -22,13 +22,17 @@ function obtenerPalabra() {
 
 function inicializarJuego() {
     const attemptsElement = document.getElementById("attempts");
-    attemptsElement.innerText = intentos;
+    const gridElement = document.getElementById("grid");
+    const resultMessageElement = document.getElementById("result-message");
 
-    button.disabled = false;
-
-    document.getElementById("grid").innerHTML = "";
-
-    document.getElementById("result-message").innerText = "";
+    if (attemptsElement && gridElement && resultMessageElement) {
+        attemptsElement.innerText = intentos;
+        button.disabled = false;
+        gridElement.innerHTML = "";
+        resultMessageElement.innerText = "";
+    } else {
+        console.error('Error: No se encontraron elementos HTML necesarios.');
+    }
 }
 
 function intentar() {
@@ -71,7 +75,13 @@ function intentar() {
     }
 
     intentos--;
-    document.getElementById("attempts").innerText = intentos;
+    const attemptsElement = document.getElementById("attempts");
+
+    if (attemptsElement) {
+        attemptsElement.innerText = intentos;
+    } else {
+        console.error('Error: No se encontró el elemento "attempts".');
+    }
 
     if (intentos === 0) {
         terminar("¡PERDISTE! La palabra era: " + palabra);
@@ -84,9 +94,13 @@ function terminar(mensaje) {
     const BOTON = document.getElementById("guess-button");
     const RESULT_MESSAGE = document.getElementById("result-message");
 
-    INPUT.disabled = true;
-    BOTON.disabled = true;
-    RESULT_MESSAGE.innerText = mensaje;
+    if (INPUT && BOTON && RESULT_MESSAGE) {
+        INPUT.disabled = true;
+        BOTON.disabled = true;
+        RESULT_MESSAGE.innerText = mensaje;
+    } else {
+        console.error('Error: No se encontraron elementos HTML necesarios.');
+    }
 }
 
 function leerIntento() {
