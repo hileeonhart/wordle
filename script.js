@@ -1,12 +1,39 @@
 let intentos = 6;
-let diccionario = ['APPLE', 'HURLS', 'WINGS', 'YOUTH'];
-const palabra = diccionario[Math.floor(Math.random() * diccionario.length)];
+let palabra;
 
 const button = document.getElementById("guess-button");
 
+function obtenerPalabra() {
+    const apiUrl = "https://palabras-api.vercel.app/palabras/random";
+
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            // Verificar que 'data.palabra' sea una cadena no vacía
+            if (typeof data.palabra === 'string' && data.palabra.length > 0) {
+                palabra = data.palabra.toUpperCase();
+                inicializarJuego();
+            } else {
+                console.error('Error: Palabra inválida obtenida de la API.');
+            }
+        })
+        .catch(error => console.error('Error al obtener la palabra:', error));
+}
+
+function inicializarJuego() {
+    const attemptsElement = document.getElementById("attempts");
+    attemptsElement.innerText = intentos;
+
+    button.disabled = false;
+
+    document.getElementById("grid").innerHTML = "";
+
+    document.getElementById("result-message").innerText = "";
+}
+
 function intentar() {
-    if (intentos === 0) {
-        return; // Evitar intentos adicionales si ya no hay intentos disponibles
+    if (intentos === 0 || !palabra) {
+        return;
     }
 
     const INTENTO = leerIntento();
@@ -21,14 +48,14 @@ function intentar() {
         const SPAN = document.createElement('span');
         SPAN.className = 'letter';
 
-        if (INTENTO[i] === palabra[i]) { //VERDE
+        if (INTENTO[i] === palabra[i]) {
             SPAN.innerHTML = INTENTO[i];
             SPAN.style.backgroundColor = 'green';
             aciertos++;
-        } else if (palabra.includes(INTENTO[i])) { //AMARILLO
+        } else if (palabra.includes(INTENTO[i])) {
             SPAN.innerHTML = INTENTO[i];
             SPAN.style.backgroundColor = 'yellow';
-        } else { //GRIS
+        } else {
             SPAN.innerHTML = INTENTO[i];
             SPAN.style.backgroundColor = 'grey';
         }
@@ -48,7 +75,7 @@ function intentar() {
 
     if (intentos === 0) {
         terminar("¡PERDISTE! La palabra era: " + palabra);
-        button.disabled = true; // Deshabilitar el botón después de agotar los intentos
+        button.disabled = true;
     }
 }
 
@@ -70,5 +97,4 @@ function leerIntento() {
 
 button.addEventListener("click", intentar);
 
-// Inicializar el número de intentos
-document.getElementById("attempts").innerText = intentos;
+window.onload = obtenerPalabra;
